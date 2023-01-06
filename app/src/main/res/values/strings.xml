@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Bonial</string>
+    <string name="filter_data_to_5_km">Filter Data to 5 KM</string>
 </resources>

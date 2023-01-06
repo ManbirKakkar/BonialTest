@@ -21,9 +21,11 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
+import com.google.gson.Gson
 import io.bonial.test.R
 import io.bonial.test.data.api.ApiHelper
 import io.bonial.test.data.api.RetrofitBuilder
+import io.bonial.test.data.model.ContentObj
 import io.bonial.test.data.model.Contents
 import io.bonial.test.databinding.ActivityMainBinding
 import io.bonial.test.extensions.showToast
@@ -43,6 +45,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var layoutManager : GridLayoutManager ?=null
     private lateinit var requestMultiplePermissions: ActivityResultLauncher<Array<String>>
+    private var listData = ArrayList<Contents>()
 
     companion object{
         const val  Column_Count_1 = 1
@@ -123,6 +126,11 @@ class MainActivity : AppCompatActivity() {
         adapter = BrochureAdapter(context = this, contentsData = arrayListOf())
         binding.recyclerView.adapter = adapter
         setupRecyclerViewLayout()
+
+        binding.checkBoxFilter.setOnCheckedChangeListener { buttonView, isChecked ->
+            retrieveList(listData, isChecked)
+        }
+
     }
 
     private fun setupRecyclerViewLayout() {
@@ -165,7 +173,7 @@ class MainActivity : AppCompatActivity() {
                     Status.SUCCESS -> {
                         binding.recyclerView.toggleVisibleGone(true)
                         binding.progressBar.toggleVisibleGone(false)
-                        resource.data?.let { users -> retrieveList(users) }
+                        resource.data?.let { users -> retrieveList(users, false) }
                     }
                     Status.ERROR -> {
                         binding.recyclerView.toggleVisibleGone(true)
@@ -181,14 +189,22 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun retrieveList(contents: List<Contents>) {
-        val listData =
-            contents.filter { (it.contentType == ContentType.BROCHURE) || (it.contentType == ContentType.BROCHURE_PREMIUM) }
+    private fun retrieveList(contents: ArrayList<Contents>, isFiterDataEnabled: Boolean) {
+        listData = contents.filter { (it.contentType == ContentType.BROCHURE) || (it.contentType == ContentType.BROCHURE_PREMIUM) } as ArrayList<Contents>
+
+       val viewData  = when {
+           isFiterDataEnabled -> listData.filter { it.content?.let { it1 -> getContentData(it1).distance }!! >= 5 }
+           else -> listData
+       }
         adapter
             .apply {
-                addUsers(listData)
+                addUsers(viewData)
                 notifyDataSetChanged()
             }
+    }
+
+    private fun getContentData(data: Any): ContentObj {
+        return Gson().fromJson(Gson().toJson(data), ContentObj::class.java)
     }
 
 

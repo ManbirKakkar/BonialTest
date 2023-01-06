@@ -32,7 +32,8 @@ data class ContentObj (
     @SerializedName("clickUrl"       ) var clickUrl       : String? = null,
     @SerializedName("imageUrl"       ) var imageUrl       : String? = null,
     @SerializedName("brochureImage"  ) var brochureImage       : String? = null,
-    @SerializedName("retailer"       ) var retailer             : Retailer?        =  Retailer()
+    @SerializedName("retailer"       ) var retailer             : Retailer?        =  Retailer(),
+    @SerializedName("distance"       ) var distance             : Double?        =  null
 )
 
 data class Retailer (
