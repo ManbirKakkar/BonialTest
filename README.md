@@ -14,7 +14,7 @@ retailer name. : DONE
 
 ● Display in static grid layout, with two columns: DONE
 
-● Filter for brochures closer than 5km : InProgress
+● Filter for brochures closer than 5km : DONE
 
 ● Display every “brochurePremium” content full width (take up all the columns)
 
