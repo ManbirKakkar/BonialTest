@@ -37,7 +37,7 @@ object Libs {
 
     object AndroidX {
 
-        private const val version = "1.2.0"
+        private const val version = "1.3.1"
         const val appcompat = "androidx.appcompat:appcompat:$version"
         const val constrainLayout = "androidx.constraintlayout:constraintlayout:2.0.4"
         const val recyclerview = "androidx.recyclerview:recyclerview:1.1.0"

@@ -1,12 +1,21 @@
 package io.bonial.test.ui.main.view
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Rect
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
@@ -24,6 +33,7 @@ import io.bonial.test.ui.main.adapter.BrochureAdapter
 import io.bonial.test.ui.main.viewmodel.BrochureViewModel
 import io.bonial.test.utils.ContentType
 import io.bonial.test.utils.Status
+import java.security.Permission
 
 
 class MainActivity : AppCompatActivity() {
@@ -32,6 +42,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: BrochureAdapter
     private lateinit var binding: ActivityMainBinding
     private var layoutManager : GridLayoutManager ?=null
+    private lateinit var requestMultiplePermissions: ActivityResultLauncher<Array<String>>
 
     companion object{
         const val  Column_Count_1 = 1
@@ -48,7 +59,39 @@ class MainActivity : AppCompatActivity() {
         setupUi()
         setupObservers()
         setupActionBar()
+        setupPermission()
 
+    }
+
+    private fun setupPermission() {
+        requestMultiplePermissions =  registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            if(permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true){
+
+            } else {
+                showToast("LOCATION PERMISSION DENIED")
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                val uri: Uri = Uri.fromParts("package", this?.packageName, null)
+                intent.data = uri
+                startActivity(intent)
+            }
+        }
+    }
+
+    private fun checkPermission() {
+        val permissions = arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+
+        val bluetoothScan = ContextCompat.checkSelfPermission(this, permissions[0]);
+        val bluetoothConnect = ContextCompat.checkSelfPermission(this, permissions[1]);
+
+        if (bluetoothScan != PackageManager.PERMISSION_GRANTED
+            || bluetoothConnect != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestMultiplePermissions.launch(permissions)
+        }
     }
 
     private fun setupActionBar() {
@@ -65,7 +108,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.filter -> showToast("Clicked")
+            R.id.filter -> checkPermission()
         }
         return super.onOptionsItemSelected(item)
     }
