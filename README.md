@@ -11,6 +11,6 @@ retailer name. : DONE
 # Optional
 ● If there is no brochure image, display a placeholder image : DONE
 ● Display in static grid layout, with two columns: DONE
-● Filter for brochures closer than 5km : (Added a contractor on menu to get location)
+● Filter for brochures closer than 5km : (Location of retailer was not in response)
 ● Display every “brochurePremium” content full width (take up all the columns)
 ● Support landscape layout with a three column layout : DONE
